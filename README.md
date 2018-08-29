@@ -7,9 +7,9 @@ This a fork from the popular [bluepy](https://github.com/IanHarvey/bluepy) API b
 
 Installation
 ------------
-'''
+´´´
 sudo python3 -m pip install git+https://github.com/Lukas1811/bluepy.git
-'''
+´´´
 
 
 

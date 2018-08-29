@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+from apt_pkg import TIME
+from builtins import staticmethod
 
 """Bluetooth Low Energy Python interface"""
 import sys
@@ -11,6 +13,9 @@ import binascii
 import select
 import struct
 import signal
+import pexpect
+from time import sleep
+from bluepy.bondInfoReader import getBondInfo
 
 def preexec_function():
     # Ignore the SIGINT signal by setting the handler to the standard
@@ -353,6 +358,14 @@ class Peripheral(BluepyHelper):
     def __init__(self, deviceAddr=None, addrType=ADDR_TYPE_PUBLIC, iface=None):
         BluepyHelper.__init__(self)
         self._serviceMap = None # Indexed by UUID
+        
+        self.controller = Peripheral.getControllerAddress()
+    
+        try:
+            self.info = Peripheral.getInfo(self.controller, deviceAddr)
+        except:
+            print("Can't get infos")
+            
         (self.deviceAddr, self.addrType, self.iface) = (None, None, None)
 
         if isinstance(deviceAddr, ScanEntry):
@@ -513,9 +526,6 @@ class Peripheral(BluepyHelper):
         self._writeCmd("secu %s\n" % level)
         return self._getResp('stat')
 
-    def unpair(self, address):
-        self._mgmtCmd("unpair %s" % (address))
-
     def setMTU(self, mtu):
         self._writeCmd("mtu %x\n" % mtu)
         return self._getResp('stat')
@@ -526,6 +536,47 @@ class Peripheral(BluepyHelper):
 
     def __del__(self):
         self.disconnect()
+        
+    @staticmethod 
+    def getControllerAddress():
+        process = os.popen('/usr/bin/hcitool dev | grep -o "[[:xdigit:]:]\{11,17\}"')
+        out = process.read()
+        out = out.replace("\n", "")
+        process.close()
+        return out
+    
+    @staticmethod
+    def getInfo(interface: str, address: str):
+        return getBondInfo(interface, address)
+    
+    @staticmethod
+    def unpair(address: str):
+        btctl = pexpect.spawn("bluetoothctl")
+        btctl.sendline("remove %s"% address)
+        sleep(1)
+        DBG("Removed bond for device %s"% address)
+        btctl.kill(0)
+    
+    @staticmethod
+    def pair(address: str, passkey: int): 
+        commands = ["disconnect",
+                    "scan on",
+                    "scan off",
+                    "connect %s"% address,
+                    "trust %s"% address,
+                    "pair %s"% address,
+                    str(passkey),
+                    "disconnect"]
+    
+        btctl = pexpect.spawn("bluetoothctl")
+        
+        for cmd in commands:
+            btctl.sendline(cmd)
+            sleep(2)
+        
+        btctl.kill(0)
+        DBG("Paired with device %s"% address)
+        sleep(2)
 
 class ScanEntry:
     addrTypes = { 1 : ADDR_TYPE_PUBLIC,

@@ -6,6 +6,8 @@ This a fork from the popular bluepy API by IanHarvey, it adds the features:
 - bondstore access (gives you the possibility to read the bondstore on your linux machine
 
 
+
+
 Python interface to Bluetooth LE on Linux
 
 This is a project to provide an API to allow access to Bluetooth Low Energy devices

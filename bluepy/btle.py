@@ -570,7 +570,7 @@ class Peripheral(BluepyHelper):
             
             for cmd in commands:
                 btctl.sendline(cmd)
-                sleep(2)
+                sleep(5)
             
             btctl.kill(0)
             DBG("Paired with device %s"% address)

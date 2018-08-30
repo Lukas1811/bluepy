@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
-from apt_pkg import TIME
-from builtins import staticmethod
 
 """Bluetooth Low Energy Python interface"""
 import sys

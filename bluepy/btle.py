@@ -357,13 +357,6 @@ class Peripheral(BluepyHelper):
         BluepyHelper.__init__(self)
         self._serviceMap = None # Indexed by UUID
         
-        self.controller = Peripheral.getControllerAddress()
-    
-        try:
-            self.info = Peripheral.getInfo(self.controller, deviceAddr)
-        except:
-            print("Can't get infos")
-            
         (self.deviceAddr, self.addrType, self.iface) = (None, None, None)
 
         if isinstance(deviceAddr, ScanEntry):

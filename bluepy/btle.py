@@ -546,6 +546,16 @@ class Peripheral(BluepyHelper):
         return out
     
     @staticmethod
+    def isPaired(address: str):
+        controller = Peripheral.getControllerAddress()
+        
+        try:
+            Peripheral.getInfo(controller, address)
+            return True
+        except:
+            return False
+    
+    @staticmethod
     def getInfo(interface: str, address: str):
         return getBondInfo(interface, address)
     
@@ -558,25 +568,26 @@ class Peripheral(BluepyHelper):
         btctl.kill(0)
     
     @staticmethod
-    def pair(address: str, passkey: int): 
-        commands = ["disconnect",
-                    "scan on",
-                    "scan off",
-                    "connect %s"% address,
-                    "trust %s"% address,
-                    "pair %s"% address,
-                    str(passkey),
-                    "disconnect"]
-    
-        btctl = pexpect.spawn("bluetoothctl")
+    def pair(address: str, passkey: int):
+        if not Peripheral.isPaired(address):
+            commands = ["disconnect",
+                        "scan on",
+                        "scan off",
+                        "connect %s"% address,
+                        "trust %s"% address,
+                        "pair %s"% address,
+                        str(passkey),
+                        "disconnect"]
         
-        for cmd in commands:
-            btctl.sendline(cmd)
+            btctl = pexpect.spawn("bluetoothctl")
+            
+            for cmd in commands:
+                btctl.sendline(cmd)
+                sleep(2)
+            
+            btctl.kill(0)
+            DBG("Paired with device %s"% address)
             sleep(2)
-        
-        btctl.kill(0)
-        DBG("Paired with device %s"% address)
-        sleep(2)
 
 class ScanEntry:
     addrTypes = { 1 : ADDR_TYPE_PUBLIC,

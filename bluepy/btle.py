@@ -549,11 +549,7 @@ class Peripheral(BluepyHelper):
     def isPaired(address: str):
         controller = Peripheral.getControllerAddress()
         
-        try:
-            Peripheral.getInfo(controller, address)
-            return True
-        except:
-            return False
+        return Peripheral.getInfo(controller, address) == None
     
     @staticmethod
     def getInfo(interface: str, address: str):

@@ -540,7 +540,7 @@ class Peripheral(BluepyHelper):
     def isPaired(address: str):
         controller = Peripheral.getControllerAddress()
         
-        return not Peripheral.getInfo(controller, address) == None
+        return not Peripheral.getInfo(controller, address)["SlaveLongTermKey"] == None
     
     @staticmethod
     def getInfo(interface: str, address: str):

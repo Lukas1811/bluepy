@@ -567,7 +567,7 @@ class Peripheral(BluepyHelper):
                         "trust %s"% address,
                         "pair %s"% address,
                         str(passkey),
-                        "disconnect"]
+                        "disconnect %s"% address]
         
             btctl = pexpect.spawn("bluetoothctl")
             

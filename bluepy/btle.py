@@ -610,12 +610,12 @@ class Peripheral(BluepyHelper):
         
         #initialize the scanner which listen to the advertisment channels and start scanning
         scanner = Scanner().withDelegate(self.ScanDelegate)
-		devices = scanner.scan(ScanTime)
+	devices = scanner.scan(ScanTime)
 		
-		#check if device has advertised during the scan
-		for device in devices:
-			if device.addr == address.lower():
-				return True
+	#check if device has advertised during the scan
+	for device in devices:
+		if device.addr == address.lower():
+			return True
         return False
 
 class ScanEntry:

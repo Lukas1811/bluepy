@@ -584,39 +584,6 @@ class Peripheral(BluepyHelper):
         btctl.kill(0)
         DBG("Paired with device %s"% address)
         sleep(2)
-        
-    @staticmethod
-    def isAvailable(address: str):
-        class NotificationDelegate(btle.DefaultDelegate):
-            """
-            Helper class which is used for notification, everytime a notification is received it handles the incoming data
-            """
-            def __init__(self):
-                super().__init__()
-                self.handle = None
-                self.data = None
-
-            def handleNotification(self, handle, data):
-                """
-                Is triggered every time the controller sends a notification or indication
-
-                :param: handle     int     (the handle of the characteristic that notified or indicated)
-                        data       bytes   (the data in the notification/indication)
-                :return: none
-                """
-                print(data)
-                self.data = DeviceFirmwareUpdater.decode(data)
-                self.handle = handle
-        
-        #initialize the scanner which listen to the advertisment channels and start scanning
-        scanner = Scanner().withDelegate(self.ScanDelegate)
-	devices = scanner.scan(ScanTime)
-		
-	#check if device has advertised during the scan
-	for device in devices:
-		if device.addr == address.lower():
-			return True
-        return False
 
 class ScanEntry:
     addrTypes = { 1 : ADDR_TYPE_PUBLIC,

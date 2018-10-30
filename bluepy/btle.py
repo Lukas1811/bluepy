@@ -559,6 +559,7 @@ class Peripheral(BluepyHelper):
     
     @staticmethod
     def pair(address: str, passkey: int):
+        Peripheral.unpair(address)
         commands = ["disconnect",
                     "scan on",
                     "scan off",

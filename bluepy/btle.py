@@ -586,18 +586,6 @@ class Peripheral(BluepyHelper):
             def __init__(self):
                 super().__init__()
                 self.devices = []
-                
-            def getDevice(self, adress):
-                """
-                Returns a device with a sppecific adress if it was discovered
-                
-                :param: adress     String         (The BLE adress of the device)
-                :return: device    Peripheral     (The requested device)
-                """
-                for device in self.devices:
-                    if device.addr is adress:
-                        return device
-                return None
                             
             def handleDiscovery(self, device , isNew, isNewData):
                 """

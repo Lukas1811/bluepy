@@ -599,7 +599,7 @@ class Peripheral(BluepyHelper):
                     self.devices.append(device)
         
         #initialize the scanner which listen to the advertisment channels and start scanning
-        scanner = Scanner().withDelegate(ScanDelegate)
+        scanner = Scanner().withDelegate(ScanDelegate())
         devices = scanner.scan(5)
         
         #check if device has advertised during the scan

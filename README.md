@@ -13,5 +13,19 @@ Installation
 sudo python3 -m pip install git+https://github.com/Lukas1811/bluepy.git
 ```
 
+New Functions
+=============
+
+- Peripheral:
+  - (static) getControllerAddress() 
+    Returns the address of the local bluetooth controller
+  - (static) getInfo(interface: str, address:str) 
+    Returns bondinformation for a specific device on a specific local controller
+  - (static) unpair(address: str)
+    Removes bonding informations for a specific device
+  - (static) pair(address: str, passkey: int)
+    Bonds the local controller with a device (close your connection to the device before pairing)
+  - (static) isAvailable(address: str)
+    Returns if a device is currently advertising
 
 

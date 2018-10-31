@@ -579,26 +579,36 @@ class Peripheral(BluepyHelper):
         
     @staticmethod
     def isAvailable(address: str):
-        class NotificationDelegate(btle.DefaultDelegate):
+        class ScanDelegate(btle.DefaultDelegate):
             """
-            Helper class which is used for notification, everytime a notification is received it handles the incoming data
-            """
+            Helper class which handles discoverys
+            """      
             def __init__(self):
                 super().__init__()
-                self.handle = None
-                self.data = None
-
-            def handleNotification(self, handle, data):
-                """
-                Is triggered every time the controller sends a notification or indication
+                self.devices = []
                 
-                :param: handle     int     (the handle of the characteristic that notified or indicated)
-                        data       bytes   (the data in the notification/indication)
-                :return: none
+            def getDevice(self, adress):
                 """
-                print(data)
-                self.data = DeviceFirmwareUpdater.decode(data)
-                self.handle = handle
+                Returns a device with a sppecific adress if it was discovered
+                
+                :param: adress     String         (The BLE adress of the device)
+                :return: device    Peripheral     (The requested device)
+                """
+                for device in self.devices:
+                    if device.addr is adress:
+                        return device
+                return None
+                            
+            def handleDiscovery(self, device , isNew, isNewData):
+                """
+                Called on receive of an Advertisment package. 
+                
+                :param: dev         Peripheral      (returns the discovered device)
+                        isNew       bool            (indicates if the device wasn't discovered before)
+                        isNewData   bool            (indicates if the advertisment data has changed)
+                """
+                if isNew:
+                    self.devices.append(device)
         
         #initialize the scanner which listen to the advertisment channels and start scanning
         scanner = Scanner().withDelegate(self.ScanDelegate)

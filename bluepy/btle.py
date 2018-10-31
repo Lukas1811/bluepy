@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from __future__ import print_function
+from apt_pkg import TIME
+from builtins import staticmethod
 
 """Bluetooth Low Energy Python interface"""
 import sys
@@ -356,7 +358,7 @@ class Peripheral(BluepyHelper):
     def __init__(self, deviceAddr=None, addrType=ADDR_TYPE_PUBLIC, iface=None):
         BluepyHelper.__init__(self)
         self._serviceMap = None # Indexed by UUID
-        
+            
         (self.deviceAddr, self.addrType, self.iface) = (None, None, None)
 
         if isinstance(deviceAddr, ScanEntry):
@@ -540,10 +542,7 @@ class Peripheral(BluepyHelper):
     def isPaired(address: str):
         controller = Peripheral.getControllerAddress()
         
-        try:
-            return not Peripheral.getInfo(controller, address)["SlaveLongTermKey"] == None
-        except:
-            return False
+        return Peripheral.getInfo(controller, address) == None
     
     @staticmethod
     def getInfo(interface: str, address: str):
@@ -559,13 +558,6 @@ class Peripheral(BluepyHelper):
     
     @staticmethod
     def pair(address: str, passkey: int):
-        """
-        Pairs your device with another device
-        
-        :param: address     string     (the BLE address of the device)
-                passkey     int        (the key for pairing) 
-        """
-        Peripheral.unpair(address)
         commands = ["disconnect",
                     "scan on",
                     "scan off",
@@ -573,17 +565,50 @@ class Peripheral(BluepyHelper):
                     "trust %s"% address,
                     "pair %s"% address,
                     str(passkey),
-                    "disconnect %s"% address]
-
+                    "disconnect"]
+    
         btctl = pexpect.spawn("bluetoothctl")
-
+        
         for cmd in commands:
             btctl.sendline(cmd)
-            sleep(3)
-
+            sleep(2)
+        
         btctl.kill(0)
         DBG("Paired with device %s"% address)
         sleep(2)
+        
+    @staticmethod
+    def isAvailable(address: str):
+        class NotificationDelegate(btle.DefaultDelegate):
+            """
+            Helper class which is used for notification, everytime a notification is received it handles the incoming data
+            """
+            def __init__(self):
+                super().__init__()
+                self.handle = None
+                self.data = None
+
+            def handleNotification(self, handle, data):
+                """
+                Is triggered every time the controller sends a notification or indication
+                
+                :param: handle     int     (the handle of the characteristic that notified or indicated)
+                        data       bytes   (the data in the notification/indication)
+                :return: none
+                """
+                print(data)
+                self.data = DeviceFirmwareUpdater.decode(data)
+                self.handle = handle
+        
+        #initialize the scanner which listen to the advertisment channels and start scanning
+        scanner = Scanner().withDelegate(self.ScanDelegate)
+        devices = scanner.scan(5)
+        
+        #check if device has advertised during the scan
+        for device in devices:
+            if device.addr == address.lower():
+                return True
+        return False
 
 class ScanEntry:
     addrTypes = { 1 : ADDR_TYPE_PUBLIC,

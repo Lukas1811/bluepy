@@ -17,15 +17,15 @@ New Functions
 =============
 
 - Peripheral:
-  - (static) getControllerAddress() 
+  - static **getControllerAddress()** 
     Returns the address of the local bluetooth controller
-  - (static) getInfo(interface: str, address:str) 
+  - static **getInfo(interface: str, address:str)**
     Returns bondinformation for a specific device on a specific local controller
-  - (static) unpair(address: str)
+  - static **unpair(address: str)**
     Removes bonding informations for a specific device
-  - (static) pair(address: str, passkey: int)
+  - static **pair(address: str, passkey: int)**
     Bonds the local controller with a device (close your connection to the device before pairing)
-  - (static) isAvailable(address: str)
+  - static **isAvailable(address: str)**
     Returns if a device is currently advertising
 
 

@@ -578,7 +578,7 @@ class Peripheral(BluepyHelper):
         sleep(2)
         
     @staticmethod
-    def isAvailable(address: str):
+    def isAvailable(address: str, scanTime=5):
         class ScanDelegate(DefaultDelegate):
             """
             Helper class which handles discoverys
@@ -600,7 +600,7 @@ class Peripheral(BluepyHelper):
         
         #initialize the scanner which listen to the advertisment channels and start scanning
         scanner = Scanner().withDelegate(ScanDelegate())
-        devices = scanner.scan(5)
+        devices = scanner.scan(scanTime)
         
         #check if device has advertised during the scan
         for device in devices:

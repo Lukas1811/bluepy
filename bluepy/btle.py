@@ -579,7 +579,7 @@ class Peripheral(BluepyHelper):
         
     @staticmethod
     def isAvailable(address: str):
-        class ScanDelegate(btle.DefaultDelegate):
+        class ScanDelegate(DefaultDelegate):
             """
             Helper class which handles discoverys
             """      
